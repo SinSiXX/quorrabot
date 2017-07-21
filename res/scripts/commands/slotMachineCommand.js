@@ -9,7 +9,7 @@
      SlotEmote3: ($.inidb.get('slotMachine', 'slotEmote3') ? $.inidb.get('slotMachine', 'slotEmote3') : "BloodTrail "),
      SlotEmote4: ($.inidb.get('slotMachine', 'slotEmote4') ? $.inidb.get('slotMachine', 'slotEmote4') : "MrDestructoid "),
      SlotEmote5: ($.inidb.get('slotMachine', 'slotEmote5') ? $.inidb.get('slotMachine', 'slotEmote5') : "<3 "),
-     SlotEmote6: ($.inidb.get('slotMachine', 'slotEmote6') ? $.inidb.get('slotMachine', 'slotEmote6') : "deIlluminati "),
+     SlotEmote6: ($.inidb.get('slotMachine', 'slotEmote6') ? $.inidb.get('slotMachine', 'slotEmote6') : "TheIlluminati "),
      SlotEmote7: ($.inidb.get('slotMachine', 'slotEmote7') ? $.inidb.get('slotMachine', 'slotEmote7') : "VaultBoy "),
      SlotReward1: (parseInt($.inidb.get('slotMachine', 'slotEmoteReward1')) ? parseInt($.inidb.get('slotMachine', 'slotEmoteReward1')) : 20),
      SlotReward2: (parseInt($.inidb.get('slotMachine', 'slotEmoteReward2')) ? parseInt($.inidb.get('slotMachine', 'slotEmoteReward2')) : 30),
