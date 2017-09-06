@@ -24,12 +24,15 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Calendar;
+import java.util.Date;
 import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONString;
+import me.gloriouseggroll.quorrabot.cache.UsernameCache;
 
 /**
  * Communicates with Twitch Kraken server using the version 3 API
@@ -257,8 +260,28 @@ public class TwitchAPIv3 {
      * @param channel
      * @return
      */
+    private String getIDFromChannel(String channel) {
+        try {
+            JSONObject user = TwitchAPIv3.instance().GetUser(channel);
+
+            if (user.getBoolean("_success")) {
+                if (user.getInt("_http") == 200) {
+                    if (user.getJSONArray("users").length() > 0) {
+                        String userID = user.getJSONArray("users").getJSONObject(0).getString("_id");
+                        return userID;
+                    }
+                } else {
+                    com.gmt2001.Console.debug.println("UsernameCache.updateCache: Failed to get username [" + channel + "] http error [" + user.getInt("_http") + "]");
+                }
+            }
+        } catch (Exception e) {
+            com.gmt2001.Console.err.printStackTrace(e);
+        }
+        return null;
+    }
+        
     public JSONObject GetChannel(String channel) {
-        return GetData(request_type.GET, base_url + "/channels/" + channel, false);
+        return GetData(request_type.GET, base_url + "/channels/" + getIDFromChannel(channel), false);
     }
 
     /**
