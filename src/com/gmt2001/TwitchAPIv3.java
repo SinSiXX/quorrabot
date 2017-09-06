@@ -281,8 +281,9 @@ public class TwitchAPIv3 {
     }
         
     public JSONObject GetChannel(String channel) {
-        return GetData(request_type.GET, base_url + "/channels/" + getIDFromChannel(channel), false);
+        return GetData(request_type.GET, base_url + "/channels/" + channel, false);
     }
+    
 
     /**
      * Updates the status and game of a channel
@@ -294,7 +295,7 @@ public class TwitchAPIv3 {
      * @return
      */
     public JSONObject UpdateChannel(String channel, String status, String game, int delay) {
-        return UpdateChannel(channel, this.oauth, status, game, delay);
+        return UpdateChannel(getIDFromChannel(channel), this.oauth, status, game, delay);
     }
 
     /**
