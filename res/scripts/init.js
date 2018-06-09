@@ -590,22 +590,6 @@ $api.on($script, 'ircChannelJoinUpdate', function (event) {
     $.hook.call('ircChannelJoinUpdate', event, true);
 });
 
-$api.on($script, 'gameWispChange', function (event) {
-    $.hook.call('gameWispChange', event, false);
-});
-
-$api.on($script, 'gameWispBenefits', function (event) {
-    $.hook.call('gameWispBenefits', event, false);
-});
-
-$api.on($script, 'gameWispSubscribe', function (event) {
-    $.hook.call('gameWispSubscribe', event, false);
-});
-
-$api.on($script, 'gameWispAnniversary', function (event) {
-    $.hook.call('gameWispAnniversary', event, false);
-});
-
 $api.on($script, 'ircPrivateMessage', function (event) {
     $.hook.call('ircPrivateMessage', event, false);
 });

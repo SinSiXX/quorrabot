@@ -25,14 +25,12 @@ $.getUserExists = function(user) {
 
 $.getStatus = function(channel) {
     var channelData = $.twitch.GetChannel(channel);
-    
-    return channelData.getString("status");
+        return channelData.getString('status');
 }
 
 $.getGame = function(channel) {
     var channelData = $.twitch.GetChannel(channel);
-    
-    return channelData.getString("game");
+        return channelData.getString('game');
 }
 
 $.getUptime = function(channel) {

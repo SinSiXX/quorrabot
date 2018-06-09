@@ -501,7 +501,7 @@ public class IRCParser {
             if (tagMaps.get("msg-id").equalsIgnoreCase("resub")) {
 		eventBus.post(new IrcPrivateMessageEvent(this.session, "twitchnotify", tagMaps.get("login") + " just subscribed for " + tagMaps.get("msg-param-months") + " months in a row!", tagMaps));
                 com.gmt2001.Console.debug.println(tagMaps.get("login") + " just subscribed for " + tagMaps.get("msg-param-months") + " months in a row!");
-            } else (tagMaps.get("msg-id").equalsIgnoreCase("sub")) {
+            } else if (tagMaps.get("msg-id").equalsIgnoreCase("sub")) {
                 eventBus.post(new IrcPrivateMessageEvent(this.session, "twitchnotify", tagMaps.get("login") + " just subscribed!", tagMaps));
                 com.gmt2001.Console.debug.println(tagMaps.get("login") + " just subscribed!");
             //not in use yet

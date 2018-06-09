@@ -117,10 +117,6 @@ $.isSub = function (user) {
             return true;
         }
     }
-    
-    if($.isGameWispSub(user)) {
-        return true;
-    }
 
     return false;
 };

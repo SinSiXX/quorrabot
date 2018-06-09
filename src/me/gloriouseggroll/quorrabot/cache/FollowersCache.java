@@ -16,7 +16,7 @@
  */
 package me.gloriouseggroll.quorrabot.cache;
 
-import com.gmt2001.TwitchAPIv3;
+import com.gmt2001.TwitchAPIv5;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.Calendar;
@@ -76,7 +76,7 @@ public class FollowersCache implements Runnable {
     }
 
     public int quickUpdate(String channel) throws Exception {
-        JSONObject j = TwitchAPIv3.instance().GetChannelFollows(channel, 100, 0, false);
+        JSONObject j = TwitchAPIv5.instance().GetChannelFollows(channel, 100, 0, false);
 
         if (j.getBoolean("_success")) {
             if (j.getInt("_http") == 200) {

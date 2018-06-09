@@ -41,7 +41,7 @@ public class DonationHandlerAPI {
 
     //Twitchalerts auth info
     private static String ta_access_token = "";
-    private static final String ta_base_url = "https://www.twitchalerts.com/api/donations?access_token=";
+    private static final String ta_base_url = "https://streamlabs.com/api/v1.0/donations?access_token=";
 
     //Streamtip auth info
     private static String st_clientid = "";
@@ -306,7 +306,6 @@ public class DonationHandlerAPI {
     public String[] taGetChannelDonations() {
         JSONObject j = GetData(DonationHandlerAPI.request_type.GET, ta_base_url + ta_access_token);
         if (j.getBoolean("_success") && !j.toString().contains("Bad Request") && !j.toString().contains("Not Found")) {
-
             if (j.getInt("_http") == 200) {
                 try {
                     if (Quorrabot.enableDebugging) {

@@ -16,7 +16,7 @@
  */
 package me.gloriouseggroll.quorrabot.cache;
 
-import com.gmt2001.TwitchAPIv3;
+import com.gmt2001.TwitchAPIv5;
 import com.google.common.collect.Maps;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,7 +44,7 @@ public class UsernameCache {
 
     private void lookupUserData(String username) {
         try {
-            JSONObject user = TwitchAPIv3.instance().GetUser(username);
+            JSONObject user = TwitchAPIv5.instance().GetUser(username);
 
             if (user.getBoolean("_success")) {
                 if (user.getInt("_http") == 200) {

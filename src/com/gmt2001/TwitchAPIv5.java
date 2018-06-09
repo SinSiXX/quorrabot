@@ -39,11 +39,11 @@ import me.gloriouseggroll.quorrabot.cache.UsernameCache;
  *
  * @author gmt2001
  */
-public class TwitchAPIv3 {
+public class TwitchAPIv5 {
 
-    private static final TwitchAPIv3 instance = new TwitchAPIv3();
-    private static final String base_url = "https://id.twitch.tv";
-    private static final String header_accept = "application/vnd.twitchtv.v3+json";
+    private static final TwitchAPIv5 instance = new TwitchAPIv5();
+    private static final String base_url = "https://api.twitch.tv/kraken";
+    private static final String header_accept = "application/vnd.twitchtv.v5+json";
     private static final int timeout = 2 * 1000;
     private String clientid = "";
     private String oauth = "";
@@ -53,11 +53,11 @@ public class TwitchAPIv3 {
         GET, POST, PUT, DELETE
     };
 
-    public static TwitchAPIv3 instance() {
+    public static TwitchAPIv5 instance() {
         return instance;
     }
 
-    private TwitchAPIv3() {
+    private TwitchAPIv5() {
         Thread.setDefaultUncaughtExceptionHandler(com.gmt2001.UncaughtExceptionHandler.instance());
     }
 
@@ -255,35 +255,23 @@ public class TwitchAPIv3 {
     }
 
     /**
-     * Gets a channel object
+     * Determines the ID of a username, if this fails it returns "0".
      *
      * @param channel
      * @return
      */
     private String getIDFromChannel(String channel) {
-        try {
-            JSONObject user = TwitchAPIv3.instance().GetUser(channel);
-
-            if (user.getBoolean("_success")) {
-                if (user.getInt("_http") == 200) {
-                    if (user.getJSONArray("users").length() > 0) {
-                        String userID = user.getJSONArray("users").getJSONObject(0).getString("_id");
-                        return userID;
-                    }
-                } else {
-                    com.gmt2001.Console.debug.println("UsernameCache.updateCache: Failed to get username [" + channel + "] http error [" + user.getInt("_http") + "]");
-                }
-            }
-        } catch (Exception e) {
-            com.gmt2001.Console.err.printStackTrace(e);
-        }
-        return null;
+        return UsernameCache.instance().getID(channel);
     }
-        
+    /**
+     * Gets a channel object
+     *
+     * @param channel
+     * @return
+     */
     public JSONObject GetChannel(String channel) {
-        return GetData(request_type.GET, base_url + "/channels/" + channel, false);
+        return GetData(request_type.GET, base_url + "/channels/" + getIDFromChannel(channel), false);
     }
-    
 
     /**
      * Updates the status and game of a channel
@@ -295,7 +283,7 @@ public class TwitchAPIv3 {
      * @return
      */
     public JSONObject UpdateChannel(String channel, String status, String game, int delay) {
-        return UpdateChannel(getIDFromChannel(channel), this.oauth, status, game, delay);
+        return UpdateChannel(channel, this.oauth, status, game, delay);
     }
 
     /**
@@ -380,7 +368,7 @@ public class TwitchAPIv3 {
 
         j.put("channel", c);
 
-        return GetData(request_type.PUT, base_url + "/channels/" + channel, j.toString(), oauth, true);
+        return GetData(request_type.PUT, base_url + "/channels/" + getIDFromChannel(channel), j.toString(), oauth, true);
     }
 
     public JSONObject SearchGame(String game) {
@@ -422,7 +410,7 @@ public class TwitchAPIv3 {
             dir = "asc";
         }
 
-        return GetData(request_type.GET, base_url + "/channels/" + channel + "/follows?limit=" + limit + "&offset=" + offset + "&direction=" + dir, false);
+        return GetData(request_type.GET, base_url + "/channels/" + getIDFromChannel(channel) + "/follows?limit=" + limit + "&offset=" + offset + "&direction=" + dir, false);
     }
 
     /**
@@ -462,7 +450,7 @@ public class TwitchAPIv3 {
             dir = "asc";
         }
         
-        String partner = GetData(request_type.GET, base_url + "/channels/" + channel + "/subscriptions?limit=" + limit + "&offset=" + offset + "&direction=" + dir, "", oauth, false).toString();
+        String partner = GetData(request_type.GET, base_url + "/channels/" + getIDFromChannel(channel) + "/subscriptions?limit=" + limit + "&offset=" + offset + "&direction=" + dir, "", oauth, false).toString();
         return partner.indexOf("422");
     }
     
@@ -476,7 +464,7 @@ public class TwitchAPIv3 {
             dir = "asc";
         }
 
-        return GetData(request_type.GET, base_url + "/channels/" + channel + "/subscriptions?limit=" + limit + "&offset=" + offset + "&direction=" + dir, "", oauth, false);
+        return GetData(request_type.GET, base_url + "/channels/" + getIDFromChannel(channel) + "/subscriptions?limit=" + limit + "&offset=" + offset + "&direction=" + dir, "", oauth, false);
     }
 
     /**
@@ -486,7 +474,7 @@ public class TwitchAPIv3 {
      * @return
      */
     public JSONObject GetStream(String channel) {
-        return GetData(request_type.GET, base_url + "/streams/" + channel, false);
+        return GetData(request_type.GET, base_url + "/streams/" + getIDFromChannel(channel), false);
     }
 
     /**
@@ -519,7 +507,7 @@ public class TwitchAPIv3 {
      * @return
      */
     public JSONObject RunCommercial(String channel, int length, String oauth) {
-        return GetData(request_type.POST, base_url + "/channels/" + channel + "/commercial", "length=" + length, oauth, false);
+        return GetData(request_type.POST, base_url + "/channels/" + getIDFromChannel(channel) + "/commercial", "length=" + length, oauth, false);
     }
 
     /**
@@ -550,7 +538,7 @@ public class TwitchAPIv3 {
      * @return
      */
     public JSONObject GetUserFollowsChannel(String user, String channel) {
-        return GetData(request_type.GET, base_url + "/users/" + user + "/follows/channels/" + channel, false);
+        return GetData(request_type.GET, base_url + "/users/" + getIDFromChannel(user) + "/follows/channels/" + getIDFromChannel(channel), false);
     }
 
     /**

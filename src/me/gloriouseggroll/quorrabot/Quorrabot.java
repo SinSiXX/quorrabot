@@ -22,14 +22,11 @@ import com.gmt2001.IniStore;
 import com.gmt2001.SqliteStore;
 import com.gmt2001.MySQLStore;
 import com.gmt2001.TempStore;
-import com.gmt2001.TwitchAPIv3;
+import com.gmt2001.TwitchAPIv5;
 import com.gmt2001.Logger;
 import com.gloriouseggroll.DonationHandlerAPI;
 import com.gloriouseggroll.LastFMAPI;
 import com.gloriouseggroll.TwitterAPI;
-import com.illusionaryone.SingularityAPI;
-import com.illusionaryone.GameWispAPI;
-import com.illusionaryone.SoundBoard;
 import com.illusionaryone.DiscordAPI;
 import com.gmt2001.YouTubeAPIv3;
 import com.google.common.eventbus.Subscribe;
@@ -67,8 +64,6 @@ import me.gloriouseggroll.quorrabot.event.command.CommandEvent;
 import me.gloriouseggroll.quorrabot.event.console.ConsoleInputEvent;
 import me.gloriouseggroll.quorrabot.event.irc.complete.IrcJoinCompleteEvent;
 import me.gloriouseggroll.quorrabot.event.irc.message.IrcPrivateMessageEvent;
-import me.gloriouseggroll.quorrabot.event.gamewisp.GameWispSubscribeEvent;
-import me.gloriouseggroll.quorrabot.event.gamewisp.GameWispAnniversaryEvent;
 import me.gloriouseggroll.quorrabot.event.twitch.follower.TwitchFollowEvent;
 import me.gloriouseggroll.quorrabot.event.twitch.host.TwitchHostedEvent;
 
@@ -140,7 +135,6 @@ public class Quorrabot implements Listener {
     public HTTPSServer httpsserver;
 
     private EventWebSocketServer eventsocketserver;
-    private SoundBoard soundBoard;
     private ConsoleInputListener cil;
     private static final boolean debugD = false;
     public static boolean enableDebugging = false;
@@ -351,8 +345,8 @@ public class Quorrabot implements Listener {
                 ini2sqlite(true);
             }
         }
-        TwitchAPIv3.instance().SetClientID(this.clientid);
-        TwitchAPIv3.instance().SetOAuth(apioauth);
+        TwitchAPIv5.instance().SetClientID(this.clientid);
+        TwitchAPIv5.instance().SetOAuth(apioauth);
 
         this.init();
 
@@ -532,14 +526,6 @@ public class Quorrabot implements Listener {
             connectDiscord();
         }
 
-        if (gamewispauth.length() > 0) {
-            GameWispAPI.instance().SetAccessToken(gamewispauth);
-            GameWispAPI.instance().SetRefreshToken(gamewisprefresh);
-            SingularityAPI.instance().setAccessToken(gamewispauth);
-            SingularityAPI.instance().StartService();
-            doRefreshGameWispToken();
-        }
-
         //Give the services above a moment to load before loading scripts and console input listener
         try {
             Thread.sleep(3000);
@@ -555,7 +541,7 @@ public class Quorrabot implements Listener {
 
         Script.global.defineProperty("inidb", dataStoreObj, 0);
         Script.global.defineProperty("tempdb", TempStore.instance(), 0);
-        Script.global.defineProperty("twitch", TwitchAPIv3.instance(), 0);
+        Script.global.defineProperty("twitch", TwitchAPIv5.instance(), 0);
         Script.global.defineProperty("username", UsernameCache.instance(), 0);
         Script.global.defineProperty("botName", username, 0);
         Script.global.defineProperty("channelName", channelName, 0);
@@ -565,7 +551,6 @@ public class Quorrabot implements Listener {
         Script.global.defineProperty("musicplayer", musicsocketserver, 0);
         Script.global.defineProperty("random", rng, 0);
         Script.global.defineProperty("youtube", YouTubeAPIv3.instance(), 0);
-        Script.global.defineProperty("gamewisp", GameWispAPI.instance(), 0);
         Script.global.defineProperty("donationhandler", DonationHandlerAPI.instance(), 0);
         Script.global.defineProperty("lastfm", LastFMAPI.instance(), 0);
         Script.global.defineProperty("baseport", baseport, 0);
@@ -574,7 +559,6 @@ public class Quorrabot implements Listener {
         Script.global.defineProperty("pollResults", pollResults, 0);
         Script.global.defineProperty("pollVoters", voters, 0);
         Script.global.defineProperty("hostname", hostname, 0);
-        Script.global.defineProperty("soundboard", soundBoard, 0);
         Script.global.defineProperty("logger", Logger.instance(), 0);
         Script.global.defineProperty("discord", DiscordAPI.instance(), 0);
         Script.global.defineProperty("discordMainChannel", getDiscordStreamOnlineChannel(), 0);
@@ -736,7 +720,7 @@ public class Quorrabot implements Listener {
             com.gmt2001.Console.out.print("Please enter the bot owner's api oauth string: ");
             String newoauth = System.console().readLine().trim();
 
-            TwitchAPIv3.instance().SetOAuth(newoauth);
+            TwitchAPIv5.instance().SetOAuth(newoauth);
             apioauth = newoauth;
 
             changed = true;
@@ -803,7 +787,7 @@ public class Quorrabot implements Listener {
             com.gmt2001.Console.out.print("Please enter the bot api clientid string: ");
             String newclientid = System.console().readLine().trim();
 
-            TwitchAPIv3.instance().SetClientID(newclientid);
+            TwitchAPIv5.instance().SetClientID(newclientid);
             clientid = newclientid;
 
             changed = true;
@@ -897,22 +881,6 @@ public class Quorrabot implements Listener {
             changed = true;
         }
 
-        if (message.equals("gamewisp")) {
-            com.gmt2001.Console.out.print("Please enter a new GameWisp Access Token: ");
-            String newgamewispauth = System.console().readLine().trim();
-            gamewispauth = newgamewispauth;
-            GameWispAPI.instance().SetAccessToken(gamewispauth);
-            SingularityAPI.instance().setAccessToken(gamewispauth);
-
-            com.gmt2001.Console.out.print("Please enter a new GameWisp Refresh Token: ");
-            String newgamewisprefresh = System.console().readLine().trim();
-
-            gamewisprefresh = newgamewisprefresh;
-            GameWispAPI.instance().SetRefreshToken(gamewisprefresh);
-            doRefreshGameWispToken();
-            changed = true;
-        }
-
         if (message.equals("discord")) {
             com.gmt2001.Console.out.print("Please enter a new Discord Access Token: ");
             String newdiscordtoken = System.console().readLine().trim();
@@ -922,24 +890,6 @@ public class Quorrabot implements Listener {
             String newdiscordmainchannel = System.console().readLine().trim();
             discordMainChannel = newdiscordmainchannel;
             changed = true;
-        }
-
-        if (message.equals("testgwrefresh")) {
-            com.gmt2001.Console.out.println("[CONSOLE] Executing testgwrefresh");
-            updateGameWispTokens(GameWispAPI.instance().refreshToken());
-            changed = true;
-        }
-
-        if (message.equals("testgwsub")) {
-            com.gmt2001.Console.out.println("[CONSOLE] Executing testgwsub");
-            EventBus.instance().post(new GameWispSubscribeEvent(this.username, 1));
-            return;
-        }
-
-        if (message.equals("testgwresub")) {
-            com.gmt2001.Console.out.println("[CONSOLE] Executing testgwresub");
-            EventBus.instance().post(new GameWispAnniversaryEvent(this.username, 2, 3));
-            return;
         }
 
         if (message.equals("webenable")) {
@@ -1012,8 +962,6 @@ public class Quorrabot implements Listener {
 
                 Files.write(Paths.get("./botlogin.txt"), data.getBytes(StandardCharsets.UTF_8),
                         StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
-
-                SingularityAPI.instance().setAccessToken(gamewispauth);
 
                 if (webenable) {
                     com.gmt2001.Console.out.println("[SHUTDOWN] Terminating web server...");
@@ -1936,8 +1884,6 @@ public class Quorrabot implements Listener {
             com.gmt2001.Console.err.println("!!!! CRITICAL !!!! gamewispauth = " + newTokens[0] + " gamewisprefresh = " + newTokens[1]);
         }
 
-        SingularityAPI.instance().setAccessToken(gamewispauth);
-
     }
 
     public void botSetTimeZone(String timezone) {
@@ -2017,30 +1963,6 @@ public class Quorrabot implements Listener {
             randomBuffer[i] = randomChars[random.nextInt(randomChars.length)];
         }
         return new String(randomBuffer);
-    }
-
-    public void doRefreshGameWispToken() {
-
-        long curTime = System.currentTimeMillis() / 1000l;
-
-        if (!dataStoreObj.exists("settings", "gameWispRefreshTime")) {
-            dataStoreObj.set("settings", "gameWispRefreshTime", String.valueOf(curTime));
-        }
-
-        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                long curTime = System.currentTimeMillis() / 1000l;
-                String lastRunStr = dataStoreObj.GetString("settings", "", "gameWispRefreshTime");
-
-                long lastRun = Long.parseLong(lastRunStr);
-                if ((curTime - lastRun) > (10 * 24 * 60 * 60)) { // 10 days, token expires every 35.
-                    dataStoreObj.set("settings", "gameWispRefreshTime", String.valueOf(curTime));
-                    updateGameWispTokens(GameWispAPI.instance().refreshToken());
-                }
-            }
-        }, 0, 1, TimeUnit.DAYS);
     }
 
 }
