@@ -497,9 +497,20 @@ public class IRCParser {
      * @param Map<String, String> tagsMap
      */
     private void userNotice(String message, String username, Map<String, String> tagMaps) {
-        if (tagMaps.containsKey("login") && tagMaps.containsKey("msg-param-months")) {
-            eventBus.post(new IrcPrivateMessageEvent(this.session, "twitchnotify", tagMaps.get("login") + " just subscribed for " + tagMaps.get("msg-param-months") + " months in a row!", tagMaps));
-            com.gmt2001.Console.debug.println(tagMaps.get("login") + " just subscribed for " + tagMaps.get("msg-param-months") + " months in a row!");
+        if (tagMaps.containsKey("msg-id")) {
+            if (tagMaps.get("msg-id").equalsIgnoreCase("resub")) {
+		eventBus.post(new IrcPrivateMessageEvent(this.session, "twitchnotify", tagMaps.get("login") + " just subscribed for " + tagMaps.get("msg-param-months") + " months in a row!", tagMaps));
+                com.gmt2001.Console.debug.println(tagMaps.get("login") + " just subscribed for " + tagMaps.get("msg-param-months") + " months in a row!");
+            } else (tagMaps.get("msg-id").equalsIgnoreCase("sub")) {
+                eventBus.post(new IrcPrivateMessageEvent(this.session, "twitchnotify", tagMaps.get("login") + " just subscribed!", tagMaps));
+                com.gmt2001.Console.debug.println(tagMaps.get("login") + " just subscribed!");
+            //not in use yet
+            /*} else if (tags.get("msg-id").equalsIgnoreCase("subgift")) {
+            } else {
+                if (tags.get("msg-id").equalsIgnoreCase("raid")) {
+                }
+            */
+            }
         }
     }
 
