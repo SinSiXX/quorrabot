@@ -42,7 +42,7 @@ import me.gloriouseggroll.quorrabot.cache.UsernameCache;
 public class TwitchAPIv3 {
 
     private static final TwitchAPIv3 instance = new TwitchAPIv3();
-    private static final String base_url = "https://api.twitch.tv/kraken";
+    private static final String base_url = "https://id.twitch.tv";
     private static final String header_accept = "application/vnd.twitchtv.v3+json";
     private static final int timeout = 2 * 1000;
     private String clientid = "";
