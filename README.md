@@ -1,5 +1,8 @@
 # QuorraBot
 
+# IMPORTANT: Updates can now be found on gitlab. Due to Microsoft buying out GitHub I have moved all of my projects to gitlab. 
+https://gitlab.com/GloriousEggroll/
+
 ## About the project:
 QuorraBot is a multi-purpose, cross-platform, user-hosted chat bot for twitch.tv
 
